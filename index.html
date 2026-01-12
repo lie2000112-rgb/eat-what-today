@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>今天吃什么 · 疯狂弹幕机</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: radial-gradient(circle, #ffffff, #f0f0f0);
+        font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    #container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .danmu {
+        position: absolute;
+        white-space: nowrap;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        opacity: 0.9;
+        animation: fly 1.2s linear forwards;
+    }
+
+    @keyframes fly {
+        from {
+            transform: translateX(-120px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(120vw);
+            opacity: 1;
+        }
+    }
+
+    #centerResult {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 60px;
+        font-weight: bold;
+        color: #ff4757;
+        display: none;
+        z-index: 999;
+        text-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    #btn {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 14px 50px;
+        font-size: 20px;
+        border: none;
+        border-radius: 40px;
+        background: #ff6b6b;
+        color: white;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    #btn:disabled {
+        background: #aaa;
+        cursor: not-allowed;
+    }
+</style>
+</head>
+
+<body>
+
+<div id="container"></div>
+<div id="centerResult"></div>
+<button id="btn" onclick="start()">开始抽签 🍜</button>
+
+<script>
+// 🍱 最多支持 100 种
+const foods = [
+   "砂锅坊", "东北菜", "外卖", "食堂",
+    "华西苑", "不是外人冒菜", "红油抄手", "米线",
+    "滋味抄手", "金陵饭店", "一点味", "塔斯汀",
+    "万州烤鱼", "浇卤冒菜", "宜宾燃面", "馄饨大王",
+    "何氏冒菜", "一元一串"
+];
+
+const container = document.getElementById("container");
+const resultEl = document.getElementById("centerResult");
+const btn = document.getElementById("btn");
+
+let barrageTimer = null;
+
+function randomFood() {
+    return foods[Math.floor(Math.random() * foods.length)];
+}
+
+function createDanmu() {
+    const el = document.createElement("div");
+    el.className = "danmu";
+    el.textContent = randomFood();
+
+    el.style.top = Math.random() * (window.innerHeight - 40) + "px";
+    el.style.fontSize = 20 + Math.random() * 20 + "px";
+    el.style.color = `hsl(${Math.random() * 360}, 70%, 40%)`;
+
+    container.appendChild(el);
+
+    setTimeout(() => el.remove(), 1200);
+}
+
+function start() {
+    btn.disabled = true;
+    resultEl.style.display = "none";
+
+    // 🚀 疯狂弹幕：每 50ms 一个
+    barrageTimer = setInterval(createDanmu, 50);
+
+    // 🎯 最终结果提前确定（公平）
+    const finalFood = randomFood();
+
+    // ⏱ 3 秒后结束
+    setTimeout(() => {
+        clearInterval(barrageTimer);
+        container.innerHTML = "";
+
+        resultEl.textContent = "🎉 今天吃：" + finalFood;
+        resultEl.style.display = "block";
+
+        btn.disabled = false;
+    }, 3000);
+}
+</script>
+
+</body>
+</html>
